@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Improvate</title>
-</head>
-<body>
-
-  <h1>Improvate</h1>
+ <h1>Improvate</h1>
 
   <p>Improvate is a collaborative storytelling platform where users contribute to ongoing stories, and the community votes every 30 minutes to decide which submission continues the story. The platform is fast-paced, engaging, and driven by the collective creativity of its users.</p>
 
@@ -54,7 +45,3 @@
     <li>Every 30 minutes, the most-voted contribution will be added to the story.</li>
     <li>Vote for the next part of the story to influence how it unfolds.</li>
   </ul>
-
-
-</body>
-</html>
