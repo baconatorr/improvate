@@ -128,15 +128,10 @@
   padding: 10px;
   border: 0;
   border-bottom: 1px solid black;
-  filter: drop-shadow(0 0.125rem 0.75rem rgba(0, 0, 0, 0.15));
   z-index: 1;
 }
 
 input:focus{
   border: 0;
   border-bottom: 1px solid black;
-}
-
-.add button{
-  
 }
