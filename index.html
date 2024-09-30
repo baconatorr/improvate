@@ -22,23 +22,27 @@
             <div class="header-buttons">
                 <button id="stories-button" class="button1">Stories</button>
                 <button id="sign-in" class="button1">Sign In</button>
-                <button id="get-started" class="button2">Get Started</button>
+                <button id="get-started" class="button2" onclick="signUpRedirect()">Get Started</button>
             </div>
             </div>
         </div>
 
-        <div class="hero">
+        <div class="hero magicpattern">
             <div class="hero-text">
                 Where stories are born
             </div>
             <div class="hero-sub">
-                One line at a time
+                one line at a time
             </div>
             <div class="hero-buttons">
-                <button>Start a story</button>
-                <button>Join a story</button>
+                <button class="hero-start-button">Start a story</button>
+                <button class="hero-join-button">Join a story</button>
             </div>
         </div>
+
    </div> 
+
+   <script src="js/firebase.js"></script>
+   <script src="js/script.js"></script>
 </body>
 </html>
