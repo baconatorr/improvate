@@ -1,4 +1,4 @@
-root{
+:root{
 
 }
 
@@ -124,7 +124,8 @@ root{
 }
 
 .hero-buttons button{
-    width: 10%;
+    width: 15%;
+    min-width: 83px;
     font-family: "Playfair Display", Arial, Helvetica, sans-serif;
     font-weight: 600;
     background-color: #ffffff;
@@ -132,6 +133,7 @@ root{
     border-radius: 20px;
     padding: 10px 13px;
     transition: transform 0.15s;
+    font-size: clamp(0.5rem, 0.3673rem + 0.708vw, 1.5rem); /*8 to 24 for 300 to 2560*/
 }
 
 .hero-buttons button:hover{
