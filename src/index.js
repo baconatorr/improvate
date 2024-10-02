@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import {
-  getFirestore, collection, getDocs, addDoc, doc, getDoc, Timestamp
+  getFirestore, collection, getDocs, addDoc, doc, getDoc, Timestamp, updateDoc, increment
 } from 'firebase/firestore'
 
 import Typewriter from '../node_modules/t-writer.js/dist/t-writer.js'
@@ -45,6 +45,7 @@ const openStoryPage = {
     genre: null,
     upvotes: null,
     user: null,
+    views: null,
     openStoryPageLink(){
       location.href = `story.html?storyId=${openStoryPage.id}`;
     },
@@ -63,6 +64,7 @@ const openStoryPage = {
             openStoryPage.openPage.genre = data["genre"];
             openStoryPage.openPage.upvotes = data["upvotes"];
             openStoryPage.openPage.user = data["user"];
+            openStoryPage.openPage.views = data["views"];
             console.log("Fetch Story Info function completed");
           } else{
             return;
@@ -75,6 +77,18 @@ const openStoryPage = {
       const titleText = document.querySelector(".title-text");
       //set the title
       titleText.innerText = this.title;
+      //set the genre
+      const genre = this.genre;
+      genre.forEach((ele) => {
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.innerText = ele;
+        const tagContainer = document.querySelector('.tag-container');
+        tagContainer.append(tag);
+      })
+      //set the user
+      const userText = document.querySelector(".user-text");
+      userText.innerText = this.user;
       //set the time
       const timeText = document.querySelector(".time-text");
       const time = this.time
@@ -82,9 +96,14 @@ const openStoryPage = {
       //set the upvotes
       const upvoteText = document.querySelector(".upvotes-text");
       upvoteText.innerText = this.upvotes;
-      //set the user
-      const userText = document.querySelector(".user-text");
-      userText.innerText = this.user;
+      //update the views
+      const viewsRef = doc(db, 'stories', openStoryPage.id);
+      updateDoc(viewsRef, {
+        "views": increment(1)
+      });
+      //set the views
+      const viewsText = document.querySelector(".views-text");
+      viewsText.innerText = this.views;
     },
   },
 }
@@ -214,9 +233,22 @@ function formatDate(timestamp) {
   return date.toLocaleString('en-US', options); // Format as desired
 }
 
-const writer = new Typewriter(target, options);
+//typewriter effect
+document.addEventListener("DOMContentLoaded", () => {
+  const target = document.querySelector('.tw');
+  if (target) {
+    const options = {
+      loop: true,
+      typeSpeed: 90,
+      deleteSpeed: 60,
+      animateCursor: true,
+      typeColor: "black"
+    };
 
+    const writer = new Typewriter(target, options);
 
-writer
-  .strings(1000, 'community', 'workshop', 'narrative') 
-  .start();
+    writer.strings(1000, 'community', 'workshop', 'narrative').start();
+  } else {
+    console.error("Target element for typewriter effect not found.");
+  }
+});
