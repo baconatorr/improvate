@@ -105,6 +105,25 @@ const openStoryPage = {
       const viewsText = document.querySelector(".views-text");
       viewsText.innerText = this.views;
     },
+    loadSentences(){
+      getDocs(openStoryPage.currentSentencesRef)
+      .then((snapshot) => {
+        snapshot.docs.forEach((doc) => {
+          //create the sentence div
+          const sentenceDiv = document.createElement('div')
+          //apply id to sentence div
+          const id = doc.id;
+          sentenceDiv.setAttribute('id', id);
+          sentenceDiv.className = "sentence"
+          //fetch the sentence from db
+          const data = doc.data();
+          sentenceDiv.innerText = data["sentence"];
+          //append sentence to card
+          const sentencesContainer = document.querySelector('.actual-sentences-container');
+          sentencesContainer.append(sentenceDiv);
+        })
+      })
+    }
   },
 }
 
@@ -120,7 +139,7 @@ if(addStoryForm){
     addDoc(storiesRef, {
       title: addStoryForm.title.value,
       //string splitting method from StackOverflow https://stackoverflow.com/questions/10346722/how-to-split-a-string-by-white-space-or-comma
-      genre: addStoryForm.genre.value.split(/[ ,]+/),
+      genre: addStoryForm.genre.value.split(/[ ,]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()),
       time: Timestamp.fromDate(date),
       upvotes: 0,
       user: "masonator"
@@ -159,65 +178,11 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Calling displayGeneralInfo function");
         openStoryPage.openPage.displayGeneralInfo();
       })
+    openStoryPage.openPage.loadSentences();
   } else {
     console.error("No story ID found in the URL.");
   }
 });
-
-function displayStory(){
-  // console.log('starting to open');
-  // //int references
-  // const storyRef = doc(db, 'stories', id)
-  // const currentSentencesRef = collection(db, 'stories', id, "currentSentences");
-  // const newSentencesRef = collection(db, 'stories', id, "newSentences");
-
-  //load general info about story
-  // getDocs(storyRef)
-  //   .then((snapshot) => {
-  //     if(snapshot.exists()){
-  //       const data = snapshot.data();
-  //       const title = data["title"];
-  //       const time = data["time"];
-  //       const genre = data["genre"];
-  //       const upvotes = data["upvotes"];
-  //     } else{
-  //       return;
-  //     }
-  //   })
-
-
-  //load the general info onto the page
-  const titleText = document.querySelector(".title-text");
-  titleText.innerText = title;
-
-  //create the cards for the already existing sentences
-  getDocs(currentSentencesRef)
-    .then((snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        //create the card div
-        const card = document.createElement('div');
-        card.className = "current-sentence-card";
-        //create the sentence div
-        const sentence = document.createElement('div');
-        sentence.className = "current-sentence-card-sentence-text";
-        //fetch the sentence from db
-        const data = doc.data();
-        sentence.innerText = data["sentence"];
-
-        //append sentence to card
-        card.append(sentence);
-        //append card to card container
-        const container = document.querySelector(".currentSentencesContainer");
-        container.append(card);
-        if (container) {
-          container.appendChild(card);
-        } else {
-          console.error("Container for current sentences not found");
-        }
-      })
-    })
-
-}
 
 //date to am pm
 function formatDate(timestamp) {
