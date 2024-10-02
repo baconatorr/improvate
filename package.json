@@ -8,7 +8,9 @@
     "build": "webpack --mode=development"
   },
   "dependencies": {
-    "firebase": "^10.13.2"
+    "firebase": "^10.13.2",
+    "t-writer.js": "^1.0.4",
+    "typewriter-effect": "^2.21.0"
   },
   "devDependencies": {
     "webpack": "^5.95.0",

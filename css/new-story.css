@@ -112,7 +112,6 @@
 }
 
 .add label{
-  /* font-family: "Roboto", Arial, Helvetica, sans-serif; */
   text-align: left;
   width: 60%;
   font-family: "Playfair Display", Arial, Helvetica, sans-serif;
@@ -134,4 +133,23 @@
 input:focus{
   border: 0;
   border-bottom: 1px solid black;
+}
+
+.blob{
+  background-color: white;
+  height: 300px;
+  aspect-ratio: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: linear-gradient(
+      to right,
+      aquamarine,
+      mediumpurple
+  );
+  animation: rotate 20s infinite;
+  z-index: -1;
+  filter:blur(200px)
 }

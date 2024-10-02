@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase/app'
 import {
-  getFirestore, collection, getDocs, addDoc, hasOwnProperty
+  getFirestore, collection, getDocs, addDoc, doc, getDoc, Timestamp
 } from 'firebase/firestore'
+
+import Typewriter from '../node_modules/t-writer.js/dist/t-writer.js'
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-bCgHWMR6mJ80jwu7EiOW8jNmNF-Kkqs",
@@ -22,68 +24,154 @@ const db = getFirestore()
 //collection ref
 const storiesRef = collection(db, 'stories');
 
-//add story
+//init function object
+const openStoryPage = {
+  id: null,
+  currentSentencesRef: null,
+  newSentencesRef: null,
+  storyRef: null,
+  updateReferences() {
+    if (this.id) {
+      this.currentSentencesRef = collection(db, 'stories', this.id, "currentSentences");
+      this.newSentencesRef = collection(db, 'stories', this.id, "newSentences");
+      this.storyRef = doc(db, 'stories', this.id);
+    } else {
+      console.error("Story ID is not set.");
+    }
+  },
+  openPage: {
+    title: null,
+    time: null,
+    genre: null,
+    upvotes: null,
+    user: null,
+    openStoryPageLink(){
+      location.href = `story.html?storyId=${openStoryPage.id}`;
+    },
+    fetchIdFromLink(){
+      console.log('Fetching Id from the Link');
+      const params = new URLSearchParams(window.location.search);
+      return params.get('storyId');
+    },
+    fetchStoryInfo(){
+      return getDoc(openStoryPage.storyRef)
+        .then((snapshot) => {
+          if(snapshot.exists()){
+            const data = snapshot.data();
+            openStoryPage.openPage.title = data["title"];
+            openStoryPage.openPage.time = data["time"];
+            openStoryPage.openPage.genre = data["genre"];
+            openStoryPage.openPage.upvotes = data["upvotes"];
+            openStoryPage.openPage.user = data["user"];
+            console.log("Fetch Story Info function completed");
+          } else{
+            return;
+          }
+        })
+    },
+    displayGeneralInfo(){
+      //update the references
+      openStoryPage.updateReferences();
+      const titleText = document.querySelector(".title-text");
+      //set the title
+      titleText.innerText = this.title;
+      //set the time
+      const timeText = document.querySelector(".time-text");
+      const time = this.time
+      timeText.innerText = formatDate(this.time);
+      //set the upvotes
+      const upvoteText = document.querySelector(".upvotes-text");
+      upvoteText.innerText = this.upvotes;
+      //set the user
+      const userText = document.querySelector(".user-text");
+      userText.innerText = this.user;
+    },
+  },
+}
+
+//--Load Story when clicked or created--
+
+//Step 0: Upload created story to database
 const addStoryForm = document.querySelector('.add')
 if(addStoryForm){
   addStoryForm.addEventListener('submit', (e) => {
     e.preventDefault();
     //create a document for the chain of stories
+    let date = new Date()
     addDoc(storiesRef, {
       title: addStoryForm.title.value,
       //string splitting method from StackOverflow https://stackoverflow.com/questions/10346722/how-to-split-a-string-by-white-space-or-comma
       genre: addStoryForm.genre.value.split(/[ ,]+/),
-      time: new Date(),
-      upvotes: 0
+      time: Timestamp.fromDate(date),
+      upvotes: 0,
+      user: "masonator"
     })
     .then((docRef) => {
       //create the collections
-      let id = docRef.id;
-      const currentSentencesRef = collection(db, 'stories', id, "currentSentences");
-      const newSentencesRef = collection(db, 'stories', id, "newSentences");
-      addDoc(newSentencesRef, {
+      openStoryPage.id = docRef.id;
+      openStoryPage.updateReferences()
+      addDoc(openStoryPage.newSentencesRef, {
         filler: null
       });
-      addDoc(currentSentencesRef, {
+      addDoc(openStoryPage.currentSentencesRef, {
         sentence: addStoryForm.sentence.value,
-        time: new Date()
+        time: new Date(),
+        user: "masonator"
       })
       .then(() => {
         //open the story
-        console.log('opening story link');
-        openStoryLink(id);
+        openStoryPage.openPage.openStoryPageLink();
       })
     })
   })
 }
 
-//set the link
-function openStoryLink(id){
-  location.href = `story.html?storyId=${id}`;
-}
-
-//continue flow between redirect and opening
+//Step 1: When page is loaded, fetch and display the story info
 document.addEventListener("DOMContentLoaded", () => {
-  const storyId = fetchIdFromLink(); // Fetch the story ID from the URL
+  console.log("Story Page Opened")
+  const storyId = openStoryPage.openPage.fetchIdFromLink(); // Fetch the story ID from the URL
+  console.log("Fetched Story Id: " + storyId);
+  openStoryPage.id = storyId;
+  openStoryPage.updateReferences();
   if (storyId) {
-    displayStory(storyId); // Call displayStory with the fetched ID
+    console.log("Calling fetchStoryInfo function");
+    openStoryPage.openPage.fetchStoryInfo()
+      .then(() => {
+        console.log("Calling displayGeneralInfo function");
+        openStoryPage.openPage.displayGeneralInfo();
+      })
   } else {
     console.error("No story ID found in the URL.");
   }
 });
 
-//fetch id from link
-function fetchIdFromLink(){
-  console.log('fetching');
-  const params = new URLSearchParams(window.location.search);
-  return params.get('storyId');
-}
+function displayStory(){
+  // console.log('starting to open');
+  // //int references
+  // const storyRef = doc(db, 'stories', id)
+  // const currentSentencesRef = collection(db, 'stories', id, "currentSentences");
+  // const newSentencesRef = collection(db, 'stories', id, "newSentences");
 
-function displayStory(id){
-  console.log('starting to open');
-  const currentSentencesRef = collection(db, 'stories', id, "currentSentences");
-  console.log('starting to open');
+  //load general info about story
+  // getDocs(storyRef)
+  //   .then((snapshot) => {
+  //     if(snapshot.exists()){
+  //       const data = snapshot.data();
+  //       const title = data["title"];
+  //       const time = data["time"];
+  //       const genre = data["genre"];
+  //       const upvotes = data["upvotes"];
+  //     } else{
+  //       return;
+  //     }
+  //   })
 
-  //create the cards
+
+  //load the general info onto the page
+  const titleText = document.querySelector(".title-text");
+  titleText.innerText = title;
+
+  //create the cards for the already existing sentences
   getDocs(currentSentencesRef)
     .then((snapshot) => {
       snapshot.docs.forEach((doc) => {
@@ -111,3 +199,24 @@ function displayStory(id){
     })
 
 }
+
+//date to am pm
+function formatDate(timestamp) {
+  const date = timestamp.toDate(); // Convert Firestore Timestamp to JavaScript Date
+  const options = {
+    year: 'numeric',
+    month: 'long', // e.g., 'October'
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true // Use 12-hour format
+  };
+  return date.toLocaleString('en-US', options); // Format as desired
+}
+
+const writer = new Typewriter(target, options);
+
+
+writer
+  .strings(1000, 'community', 'workshop', 'narrative') 
+  .start();

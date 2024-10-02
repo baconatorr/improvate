@@ -1,0 +1,146 @@
+.container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header{
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid black;
+}
+
+.inner-header{
+  width: 95%;
+  height: 100%;
+  display: block;
+}
+
+.logo-container{
+  height: 100%;
+  width: 60%;
+  display: table;
+  float: left;
+}
+
+.logo-text{
+  display: table-cell;
+  vertical-align: middle;
+  font-family: "Playfair Display", Arial, Helvetica, sans-serif;
+  font-style: italic;
+  font-size: clamp(1.25rem, 0.9181rem + 1.7699vw, 3.75rem); /*20-60 for 300 to 2560*/
+}
+
+.header-buttons{
+  float: right;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2vw;
+}
+
+.header-buttons button{
+  font-size: clamp(0.75rem, 0.6504rem + 0.531vw, 1.5rem); /*12 to 24 for 300 to 2560*/
+}
+
+.button1{
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  background: 0;
+  border: 0;
+  transition: transform 0.15s;
+}
+
+.button1:hover,
+.button2:hover{
+  transform: scale(1.05);
+}
+
+.button1:hover{
+  text-decoration: underline;
+}
+
+.button1:active,
+.button2:active{
+  transform: scale(0.95);
+}
+
+.button2{
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  color: white;
+  background: #101010;
+  border: 0;
+  border-radius: 20px;
+  padding: 13px 22px;
+  transition: transform 0.15s;
+}
+
+.general-info-container{
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: auto;
+  padding: 20px;
+  min-width: 50%;
+  margin-top: 5vh;
+  gap: 2.5vh;
+  border-radius: 20px;
+}
+
+.title-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  width: 100%;
+  transition: transform 0.15s;
+}
+
+.scale:hover{
+  transform: scale(1.05);
+}
+
+.title-text{
+  font-family: "Playfair Display", Arial, Helvetica, sans-serif;
+  font-size: clamp(0.9375rem, 0.7301rem + 1.1062vw, 2.5rem); /*15 to 40 for 300 to 2560*/
+  font-weight: 600;
+  font-style: italic;
+}
+
+.sub-info-container{
+  display: flex;
+  justify-content: space-between;
+  z-index: 0;
+  width: 100%;
+  z-index: 0;
+  border-radius: 20px;
+  transition: transform 0.15s;
+}
+
+.time-and-user{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
+}
+
+.upvotes-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-container{
+  display: flex;
+  justify-content: center;
+  text-decoration: underline;
+}
