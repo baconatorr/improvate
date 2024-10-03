@@ -2,6 +2,11 @@ import { initializeApp } from 'firebase/app'
 import {
   getFirestore, collection, getDocs, addDoc, doc, getDoc, Timestamp, updateDoc, increment
 } from 'firebase/firestore'
+import{
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+   onAuthStateChanged, setPersistence, browserSessionPersistence,
+   updateProfile, signOut
+} from 'firebase/auth'
 
 import Typewriter from '../node_modules/t-writer.js/dist/t-writer.js'
 
@@ -15,16 +20,90 @@ const firebaseConfig = {
   measurementId: "G-QXFCSF2QB2"
 };
 
+
 //init firebase app
 initializeApp(firebaseConfig);
 
 //init services
 const db = getFirestore()
+const auth = getAuth()
+
+// set session persistence to browser session
+setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    console.log("Session persistence is set.");
+  })
+  .catch((error) => {
+    console.error("Error setting session persistence:", error.message);
+  });
+
 
 //collection ref
 const storiesRef = collection(db, 'stories');
 
-//init function object
+//navigation function
+window.navigate = function(loc){
+    location.href = loc + ".html"
+  }
+
+
+//--homepage navigation based on auth--
+document.addEventListener("DOMContentLoaded", () => {
+  const auth = getAuth();
+  console.log("Checking user authentication...");
+
+  // monitor auth state
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("User is signed in:", user);
+      // User is signed in
+      const hiddenButtons = document.querySelectorAll('.not-logged');
+      const visibleButtons = document.querySelectorAll('.logged');
+
+      // Hide not-logged buttons
+      hiddenButtons.forEach((button) => {
+        button.style.display = "none";
+      });
+
+      // Show logged buttons
+      visibleButtons.forEach((button) => {
+        button.style.display = "block"; // or "flex" if needed
+      });
+    } else {
+      console.log("No user is signed in.");
+      // User is not signed in
+      const hiddenButtons = document.querySelectorAll('.logged');
+      const visibleButtons = document.querySelectorAll('.not-logged');
+
+      // Hide logged buttons
+      hiddenButtons.forEach((button) => {
+        button.style.display = "none";
+      });
+
+      // Show not-logged buttons
+      visibleButtons.forEach((button) => {
+        button.style.display = "block"; // or "flex" if needed
+      });
+    }
+  });
+});
+
+
+//start a story
+const storyButton = document.querySelector('.hero-start-button');
+// event listener for button press
+if (storyButton) {
+  console.log("Story button");
+  storyButton.addEventListener('click', () => {
+    const auth = getAuth();
+    if (auth.currentUser != null) {
+      window.location.href = 'new-story.html';
+    } else if(auth.currentUser == null){
+      window.location.href = 'login.html';
+    }
+  });
+}
+//object for opening stories
 const openStoryPage = {
   id: null,
   currentSentencesRef: null,
@@ -127,9 +206,9 @@ const openStoryPage = {
   },
 }
 
-//--Load Story when clicked or created--
+//--Creating, then opening, stories--
 
-//Step 0: Upload created story to database
+//Upload created story to database
 const addStoryForm = document.querySelector('.add')
 if(addStoryForm){
   addStoryForm.addEventListener('submit', (e) => {
@@ -142,7 +221,8 @@ if(addStoryForm){
       genre: addStoryForm.genre.value.split(/[ ,]+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()),
       time: Timestamp.fromDate(date),
       upvotes: 0,
-      user: "masonator"
+      user: auth.currentUser.displayName,
+      views: 0
     })
     .then((docRef) => {
       //create the collections
@@ -154,7 +234,7 @@ if(addStoryForm){
       addDoc(openStoryPage.currentSentencesRef, {
         sentence: addStoryForm.sentence.value,
         time: new Date(),
-        user: "masonator"
+        user: auth.currentUser.uid
       })
       .then(() => {
         //open the story
@@ -164,9 +244,10 @@ if(addStoryForm){
   })
 }
 
-//Step 1: When page is loaded, fetch and display the story info
+//--Loading Stories--
+
+//When page is loaded, fetch and display the story info
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Story Page Opened")
   const storyId = openStoryPage.openPage.fetchIdFromLink(); // Fetch the story ID from the URL
   console.log("Fetched Story Id: " + storyId);
   openStoryPage.id = storyId;
@@ -183,6 +264,58 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("No story ID found in the URL.");
   }
 });
+
+//--User auth--
+
+//form submit
+const signUpForm = document.querySelector('.signupform')
+if(signUpForm){
+  signUpForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+  
+    const email = signUpForm.email.value;
+    const password = signUpForm.password.value;
+    const displayName = signUpForm.username.value;
+  
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((cred) => {
+        console.log("User created:", cred.user);
+        return updateProfile(cred.user, {
+          displayName: displayName, photoURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png'
+        });
+      })
+      .then(() => {
+        signUpForm.reset();
+        navigate('login');
+      })
+      .catch((err) => {
+        console.log(err.message)
+      })
+  });
+}
+
+//log in email method
+const logInForm = document.querySelector('.loginform');
+if(logInForm){
+  logInForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    const email = logInForm.email.value;
+    const password = logInForm.password.value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((cred) => {
+        console.log("User logged in:", cred.user);
+        logInForm.reset();
+        window.location.href = 'index.html';
+      })
+        .catch((err) => {
+        console.log(err.message)
+     })
+    
+  })
+}
+//--Misc Functions
 
 //date to am pm
 function formatDate(timestamp) {
@@ -213,7 +346,5 @@ document.addEventListener("DOMContentLoaded", () => {
     const writer = new Typewriter(target, options);
 
     writer.strings(1000, 'community', 'workshop', 'narrative').start();
-  } else {
-    console.error("Target element for typewriter effect not found.");
   }
 });

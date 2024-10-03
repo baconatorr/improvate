@@ -4,7 +4,6 @@
 }
 
 .header{
-  z-index: 20;
   width: 100%;
   height: 80px;
   display: flex;
@@ -55,7 +54,8 @@
 }
 
 .button1:hover,
-.button2:hover{
+.button2:hover,
+profile:hover{
   transform: scale(1.05);
 }
 
@@ -79,6 +79,17 @@
   transition: transform 0.15s;
 }
 
+#profile{
+  background-color: #ffffff;
+  border: 0;
+  transition: transform 0.15s;
+}
+
+#profile img{
+  width: clamp(1.25rem, 0.6887rem + 1.7961vw, 3.5625rem);
+  aspect-ratio: 1;
+  border-radius: 0;
+}
 .form-title{
   display: flex;
   font-family: "Playfair Display", Arial, Helvetica, sans-serif;

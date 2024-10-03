@@ -24,8 +24,11 @@
                 </div>
             <div class="header-buttons">
                 <button id="stories-button" class="button1 above">Stories</button>
-                <button id="sign-in" class="button1 above">Sign In</button>
-                <button id="get-started" class="button2 above">Get Started</button>
+                <button id="sign-in" class="button1 above not-logged" onclick="navigate('login')">Sign In</button>
+                <button id="get-started" class="button2 above not-logged" onclick="navigate('signup')">Get Started</button>
+                <button id="profile" class="profile logged" onclick="navigate('profile')">
+                    <img id="profile-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png">
+                </button>
             </div>
             </div>
         </div>

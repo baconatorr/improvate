@@ -66,7 +66,8 @@
 }
 
 .button1:hover,
-.button2:hover{
+.button2:hover,
+profile:hover{
     transform: scale(1.05);
 }
 
@@ -89,7 +90,18 @@
     padding: 13px 22px;
     transition: transform 0.15s;
 }
+
+#profile{
+    background-color: #ffffff;
+    border: 0;
+    transition: transform 0.15s;
+}
   
+#profile img{
+    width: clamp(1.25rem, 0.6887rem + 1.7961vw, 3.5625rem);
+    aspect-ratio: 1;
+    border-radius: 0;
+}
 
 .hero{
     display: flex;

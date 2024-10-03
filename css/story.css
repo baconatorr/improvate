@@ -55,7 +55,8 @@
 }
 
 .button1:hover,
-.button2:hover{
+.button2:hover,
+profile:hover{
   transform: scale(1.05);
 }
 
@@ -77,6 +78,18 @@
   border-radius: 20px;
   padding: 13px 22px;
   transition: transform 0.15s;
+}
+
+#profile{
+  background-color: #ffffff;
+  border: 0;
+  transition: transform 0.15s;
+}
+
+#profile img{
+  width: clamp(1.25rem, 0.6887rem + 1.7961vw, 3.5625rem);
+  aspect-ratio: 1;
+  border-radius: 0;
 }
 
 .general-info-container{
@@ -148,7 +161,7 @@
   display: flex;
   align-items: center;
   justify-content: start;
-  gap: 2vw;
+  gap: 7px;
 }
 
 .upvotes-container{
@@ -173,7 +186,8 @@
   width: auto;
   font-family: "Roboto", Arial, Helvetica, sans-serif;
   font-weight: 500;
-  color:#6b6b6b
+  color:#6b6b6b;
+  font-size: clamp(0.625rem, 0.5006rem + 0.6637vw, 1.5625rem);
 }
 
 .actual-sentences-container{
@@ -187,5 +201,6 @@
 }
 
 .sentence{
+  font-size: clamp(1rem, 0.8673rem + 0.708vw, 2rem);
   font-family: "Noto Serif", Arial, Helvetica, sans-serif;
 }
