@@ -46,9 +46,8 @@ window.navigate = function(loc){
     location.href = loc + ".html"
   }
 
-
-//--homepage navigation based on auth--
 document.addEventListener("DOMContentLoaded", () => {
+//--homepage navigation based on auth--
   const auth = getAuth();
   console.log("Checking user authentication...");
 
@@ -86,6 +85,30 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+
+  const storyId = openStoryPage.openPage.fetchIdFromLink(); // Fetch the story ID from the URL
+  console.log("Fetched Story Id: " + storyId);
+  openStoryPage.id = storyId;
+  openStoryPage.updateReferences();
+  if (storyId) {
+    console.log("Calling fetchStoryInfo function");
+    openStoryPage.openPage.fetchStoryInfo()
+      .then(() => {
+        console.log("Calling displayGeneralInfo function");
+        openStoryPage.openPage.displayGeneralInfo();
+      })
+    openStoryPage.openPage.loadSentences();
+  } else {
+    console.error("No story ID found in the URL.");
+  }
+
+  //make header navigatable
+  const logo = document.querySelector(".logo-text")
+  if(logo){
+    logo.addEventListener('click', () => {
+      navigate('index')
+    })
+  }
 });
 
 
@@ -243,27 +266,6 @@ if(addStoryForm){
     })
   })
 }
-
-//--Loading Stories--
-
-//When page is loaded, fetch and display the story info
-document.addEventListener("DOMContentLoaded", () => {
-  const storyId = openStoryPage.openPage.fetchIdFromLink(); // Fetch the story ID from the URL
-  console.log("Fetched Story Id: " + storyId);
-  openStoryPage.id = storyId;
-  openStoryPage.updateReferences();
-  if (storyId) {
-    console.log("Calling fetchStoryInfo function");
-    openStoryPage.openPage.fetchStoryInfo()
-      .then(() => {
-        console.log("Calling displayGeneralInfo function");
-        openStoryPage.openPage.displayGeneralInfo();
-      })
-    openStoryPage.openPage.loadSentences();
-  } else {
-    console.error("No story ID found in the URL.");
-  }
-});
 
 //--User auth--
 

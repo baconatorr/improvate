@@ -55,7 +55,7 @@
 
 .button1:hover,
 .button2:hover,
-profile:hover{
+#profile:hover{
   transform: scale(1.05);
 }
 
