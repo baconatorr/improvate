@@ -5,7 +5,7 @@ import {
 import{
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
    onAuthStateChanged, setPersistence, browserSessionPersistence,
-   updateProfile, signOut
+   updateProfile, signOut, getUser
 } from 'firebase/auth'
 
 import Typewriter from '../node_modules/t-writer.js/dist/t-writer.js'
@@ -96,8 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(() => {
         console.log("Calling displayGeneralInfo function");
         openStoryPage.openPage.displayGeneralInfo();
+        console.log("Calling loadSentences function");
+        openStoryPage.openPage.loadSentences()
+          .then(() => {
+            console.log("Calling loadSentencesInfo function");
+            openStoryPage.openPage.loadSentenceInfo();
+          })
       })
-    openStoryPage.openPage.loadSentences();
   } else {
     console.error("No story ID found in the URL.");
   }
@@ -112,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-//start a story
+//start a story with index
 const storyButton = document.querySelector('.hero-start-button');
 // event listener for button press
 if (storyButton) {
@@ -126,6 +131,7 @@ if (storyButton) {
     }
   });
 }
+
 //object for opening stories
 const openStoryPage = {
   id: null,
@@ -208,7 +214,7 @@ const openStoryPage = {
       viewsText.innerText = this.views;
     },
     loadSentences(){
-      getDocs(openStoryPage.currentSentencesRef)
+      return getDocs(openStoryPage.currentSentencesRef)
       .then((snapshot) => {
         snapshot.docs.forEach((doc) => {
           //create the sentence div
@@ -225,6 +231,33 @@ const openStoryPage = {
           sentencesContainer.append(sentenceDiv);
         })
       })
+    },
+    loadSentenceInfo(){
+      console.log("Adding event listeners to sentences...");
+      const sentences = document.querySelectorAll('.sentence');
+    
+      sentences.forEach((sentence) => {
+        sentence.addEventListener('click', () => {
+          console.log("clicked!");
+          const sentenceId = sentence.id;
+          const sentenceRef = doc(db, 'stories', openStoryPage.id, "currentSentences", sentenceId);
+          getDoc(sentenceRef).then((docSnapshot) => {
+            if (docSnapshot.exists()) {
+              console.log("Sentence data:", docSnapshot.data());
+              const data = docSnapshot.data();
+              const sentenceUser = data["user"];
+              const sentenceTime = formatDate(data["time"]);
+              const sentenceText = sentence.innerText;
+              const dialog = document.querySelector("#dialog");
+              dialog.showModal();
+              const sentenceUserText = document.querySelector(".sentence-user")
+              sentenceUserText.innerText = "User: " + sentenceUser
+            }
+          }).catch((error) => {
+            console.error("Error fetching sentence:", error);
+          });
+        });
+      });
     }
   },
 }
@@ -257,7 +290,7 @@ if(addStoryForm){
       addDoc(openStoryPage.currentSentencesRef, {
         sentence: addStoryForm.sentence.value,
         time: new Date(),
-        user: auth.currentUser.uid
+        user: auth.currentUser.displayName
       })
       .then(() => {
         //open the story
@@ -266,6 +299,8 @@ if(addStoryForm){
     })
   })
 }
+
+
 
 //--User auth--
 
